@@ -118,6 +118,24 @@ int main(int argc, char *argv[])
 	pthread_attr_t th_attr;
 	sigset_t       sigmask;
 	probe_t        probe;
+	const char *OSCAP_PROBE_RSH;
+	char *probe_command, *probe_exec[10];
+
+	OSCAP_PROBE_RSH = getenv("OSCAP_PROBE_RSH");
+
+	if (OSCAP_PROBE_RSH) {
+		probe_command = (char *)malloc(strlen(OSCAP_PROBE_RSH) + 1 + strlen(argv[0]) + 1);
+		sprintf(probe_command, "%s %s", OSCAP_PROBE_RSH, argv[0]);
+
+		probe_exec[0] = "/bin/sh";
+		probe_exec[1] = "-c";
+		probe_exec[2] = probe_command;
+		probe_exec[3] = NULL;
+
+		execv(probe_exec[0], probe_exec);
+		fprintf(stderr, "cann't exec %s: %s\n", probe_exec[0], strerror(errno));
+		fail(errno, "cannot exec OSCAP_PROBE_RSH", __LINE__);
+	}
 
 	if ((errno = pthread_barrier_init(&OSCAP_GSYM(th_barrier), NULL,
 	                                  1 + // signal thread
