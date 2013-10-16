@@ -107,6 +107,7 @@ AC_DEFUN([gl_EARLY],
   # Code from module strsep:
   # Code from module sys_stat:
   # Code from module sys_types:
+  # Code from module sys_uio:
   # Code from module threadlib:
   gl_THREADLIB_EARLY
   # Code from module time:
@@ -336,6 +337,8 @@ AC_DEFUN([gl_INIT],
   AC_PROG_MKDIR_P
   gl_SYS_TYPES_H
   AC_PROG_MKDIR_P
+  gl_HEADER_SYS_UIO
+  AC_PROG_MKDIR_P
   gl_THREADLIB
   gl_HEADER_TIME_H
   gl_UNISTD_H
@@ -562,6 +565,7 @@ AC_DEFUN([gl_FILE_LIST], [
   lib/strsep.c
   lib/sys_stat.in.h
   lib/sys_types.in.h
+  lib/sys_uio.in.h
   lib/time.in.h
   lib/unistd.c
   lib/unistd.in.h
@@ -647,6 +651,7 @@ AC_DEFUN([gl_FILE_LIST], [
   m4/sys_socket_h.m4
   m4/sys_stat_h.m4
   m4/sys_types_h.m4
+  m4/sys_uio_h.m4
   m4/threadlib.m4
   m4/time_h.m4
   m4/unistd_h.m4
