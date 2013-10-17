@@ -296,17 +296,6 @@ typedef enum {
 	OVAL_WINDOWS_WUA_UPDATE_SEARCHER = OVAL_FAMILY_WINDOWS + 33
 } oval_windows_subtype_t;
 
-/// severity level
-typedef enum {
-	XML_VALIDITY_WARNING = 1,
-	XML_VALIDITY_ERROR = 2,
-	XML_WARNING = 3,
-	XML_ERROR = 4,
-	OVAL_LOG_INFO = 15,
-	OVAL_LOG_DEBUG = 16,
-	OVAL_LOG_WARN = 17
-} oval_xml_severity_t;
-
 /**
  * @}
  */
