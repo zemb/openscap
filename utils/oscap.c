@@ -126,7 +126,9 @@ static int print_versions(const struct oscap_action *action)
 	printf("Schema files: %s\n", oscap_path_to_schemas());
 	printf("Schematron files: %s\n", oscap_path_to_schematron());
 	printf("Default CPE files: %s\n", oscap_path_to_cpe());
+#if defined(OVAL_PROBES_ENABLED)
 	printf("Probes: %s\n", oval_probe_ext_getdir());
+#endif
 	printf("\n");
 
 	printf("==== Inbuilt CPE names ====\n");
@@ -156,10 +158,10 @@ static int print_versions(const struct oscap_action *action)
 		cpe_dict_model_free(cpe_dict);
 	}
 	printf("\n");
-
+#if defined(OVAL_PROBES_ENABLED)
 	printf("==== Supported OVAL objects and associated OpenSCAP probes ====\n");
 	oval_probe_meta_list(stdout, OVAL_PROBEMETA_LIST_DYNAMIC);
-
+#endif
 	return OSCAP_OK;
 }
 

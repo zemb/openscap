@@ -362,6 +362,73 @@ esac
 AC_SUBST(crapi_CFLAGS)
 AC_SUBST(crapi_LIBS)
 
+AC_ARG_ENABLE([cce],
+     [AC_HELP_STRING([--enable-cce], [include support for CCE (default=no)])],
+     [case "${enableval}" in
+       yes) cce=yes ;;
+       no)  cce=no  ;;
+       *) AC_MSG_ERROR([bad value ${enableval} for --enable-cce]) ;;
+     esac],[cce=no])
+
+AC_ARG_ENABLE([python],
+     [AC_HELP_STRING([--enable-python], [enable compilation of python bindings (default=yes)])],
+     [case "${enableval}" in
+       yes) python_bind=yes ;;
+       no)  python_bind=no  ;;
+       *) AC_MSG_ERROR([bad value ${enableval} for --enable-python]) ;;
+     esac],[python_bind=yes])
+
+AC_ARG_ENABLE([perl],
+     [AC_HELP_STRING([--enable-perl], [enable compilation of perl bindings (default=no)])],
+     [case "${enableval}" in
+       yes) perl_bind=yes ;;
+       no)  perl_bind=no  ;;
+       *) AC_MSG_ERROR([bad value ${enableval} for --enable-perl]) ;;
+     esac],[perl_bind=no])
+
+AC_ARG_ENABLE([regex-posix],
+     [AC_HELP_STRING([--enable-regex-posix], [compile with POSIX instead of PCRE regex (default=no)])],
+     [case "${enableval}" in
+       yes) regex_posix=yes ;;
+       no)  regex_posix=no  ;;
+       *) AC_MSG_ERROR([bad value ${enableval} for --enable-regex-posix]) ;;
+     esac],[regex_posix=no])
+
+AC_ARG_ENABLE([debug],
+     [AC_HELP_STRING([--enable-debug], [enable debugging flags (default=no)])],
+     [case "${enableval}" in
+       yes) debug=yes ;;
+       no)  debug=no ;;
+       *) AC_MSG_ERROR([bad value ${enableval} for --enable-debug]) ;;
+     esac], [debug=no])
+
+AC_ARG_ENABLE([valgrind],
+     [AC_HELP_STRING([--enable-valgrind], [enable valgrind checks (default=no)])],
+     [case "${enableval}" in
+       yes) vgdebug=yes ;;
+       no)  vgdebug=no ;;
+       *) AC_MSG_ERROR([bad value ${enableval} for --enable-valgrind]) ;;
+     esac], [vgdebug=no])
+
+
+AC_ARG_ENABLE([ssp],
+     [AC_HELP_STRING([--enable-ssp], [enable SSP (fstack-protector, default=no)])],
+     [case "${enableval}" in
+       yes) ssp=yes ;;
+       no)  ssp=no ;;
+       *) AC_MSG_ERROR([bad value ${enableval} for --enable-ssp]) ;;
+     esac], [ssp=no])
+
+AC_ARG_ENABLE([probes],
+     [AC_HELP_STRING([--enable-probes], [enable compilation of probes (default=yes)])],
+     [case "${enableval}" in
+       yes) probes=yes ;;
+       no)  probes=no  ;;
+       *) AC_MSG_ERROR([bad value ${enableval} for --enable-probes]) ;;
+     esac],[probes=yes])
+
+if test "$probes" = "yes"; then
+
 AC_CHECK_FUNCS([fts_open posix_memalign memalign])
 AC_CHECK_FUNC(sigwaitinfo, [sigwaitinfo_LIBS=""], [sigwaitinfo_LIBS="-lrt"])
 AC_SUBST(sigwaitinfo_LIBS)
@@ -475,7 +542,7 @@ AC_CHECK_HEADERS([stdio_ext.h ],[],[probe_uname_opt_deps_ok=no],[-])
 
 echo
 echo ' * Checking presence of required headers for the interface probe'
-AC_CHECK_HEADERS([arpa/inet.h ifaddrs.h net/if.h net/if_arp.h netdb.h stdio.h string.h sys/ioctl.h sys/socket.h unistd.h ],[],[probe_interface_req_deps_ok=no; probe_interface_req_deps_missing='header files'],[-])
+AC_CHECK_HEADERS([arpa/inet.h ifaddrs.h netdb.h net/if_arp.h net/if.h stdio.h string.h sys/ioctl.h sys/socket.h unistd.h ],[],[probe_interface_req_deps_ok=no; probe_interface_req_deps_missing='header files'],[-])
 
 echo
 echo ' * Checking presence of required headers for the xinetd probe'
@@ -487,7 +554,7 @@ AC_CHECK_HEADERS([ctype.h errno.h limits.h stdio.h string.h ],[],[probe_sysctl_r
 
 echo
 echo ' * Checking presence of required headers for the routingtable probe'
-AC_CHECK_HEADERS([arpa/inet.h byteswap.h endian.h errno.h net/route.h netinet/in.h netinet/ip.h netinet/ip6.h stdio.h stdlib.h string.h ],[],[probe_routingtable_req_deps_ok=no; probe_routingtable_req_deps_missing='header files'],[-])
+AC_CHECK_HEADERS([arpa/inet.h byteswap.h endian.h errno.h netinet/in.h netinet/ip6.h netinet/ip.h net/route.h stdio.h stdlib.h string.h ],[],[probe_routingtable_req_deps_ok=no; probe_routingtable_req_deps_missing='header files'],[-])
 
 echo
 echo ' * Checking presence of required headers for the gconf probe'
@@ -495,7 +562,7 @@ AC_CHECK_HEADERS([gconf/gconf.h limits.h pcre.h stdint.h stdlib.h string.h ],[],
 
 echo
 echo ' * Checking presence of required headers for the isainfo probe'
-AC_CHECK_HEADERS([arpa/inet.h dirent.h errno.h fcntl.h netdb.h regex.h stdio.h stdio_ext.h stdlib.h string.h sys/systeminfo.h ],[],[probe_isainfo_req_deps_ok=no; probe_isainfo_req_deps_missing='header files'],[-])
+AC_CHECK_HEADERS([arpa/inet.h dirent.h errno.h fcntl.h netdb.h regex.h stdio_ext.h stdio.h stdlib.h string.h sys/systeminfo.h ],[],[probe_isainfo_req_deps_ok=no; probe_isainfo_req_deps_missing='header files'],[-])
 
 echo
 echo ' * Checking presence of required headers for the partition probe'
@@ -507,11 +574,11 @@ AC_CHECK_HEADERS([blkid/blkid.h linux/magic.h ],[],[probe_partition_opt_deps_ok=
 
 echo
 echo ' * Checking presence of required headers for the inetlisteningservers probe'
-AC_CHECK_HEADERS([arpa/inet.h dirent.h errno.h fcntl.h netdb.h regex.h stdio.h stdio_ext.h stdlib.h string.h ],[],[probe_inetlisteningservers_req_deps_ok=no; probe_inetlisteningservers_req_deps_missing='header files'],[-])
+AC_CHECK_HEADERS([arpa/inet.h dirent.h errno.h fcntl.h netdb.h regex.h stdio_ext.h stdio.h stdlib.h string.h ],[],[probe_inetlisteningservers_req_deps_ok=no; probe_inetlisteningservers_req_deps_missing='header files'],[-])
 
 echo
 echo ' * Checking presence of required headers for the iflisteners probe'
-AC_CHECK_HEADERS([arpa/inet.h dirent.h errno.h fcntl.h netdb.h regex.h stdio.h stdio_ext.h stdlib.h string.h ],[],[probe_iflisteners_req_deps_ok=no; probe_iflisteners_req_deps_missing='header files'],[-])
+AC_CHECK_HEADERS([arpa/inet.h dirent.h errno.h fcntl.h netdb.h regex.h stdio_ext.h stdio.h stdlib.h string.h ],[],[probe_iflisteners_req_deps_ok=no; probe_iflisteners_req_deps_missing='header files'],[-])
 
 echo
 echo ' * Checking presence of required headers for the selinuxboolean probe'
@@ -878,7 +945,6 @@ else
   AC_MSG_NOTICE([!!! Compiler does not support atomic builtins. Atomic operation will be emulated using mutex-based locking. !!!])
 fi
 
-
 AC_ARG_ENABLE([probes-independent],
      [AC_HELP_STRING([--enable-probes-independent], [enable compilation of probes independent of the base system (default=yes)])],
      [case "${enableval}" in
@@ -927,62 +993,7 @@ AC_ARG_ENABLE([probes-solaris],
        *) AC_MSG_ERROR([bad value ${enableval} for --enable-probes-solaris]) ;;
      esac],)
 
-AC_ARG_ENABLE([cce],
-     [AC_HELP_STRING([--enable-cce], [include support for CCE (default=no)])],
-     [case "${enableval}" in
-       yes) cce=yes ;;
-       no)  cce=no  ;;
-       *) AC_MSG_ERROR([bad value ${enableval} for --enable-cce]) ;;
-     esac],[cce=no])
-
-AC_ARG_ENABLE([python],
-     [AC_HELP_STRING([--enable-python], [enable compilation of python bindings (default=yes)])],
-     [case "${enableval}" in
-       yes) python_bind=yes ;;
-       no)  python_bind=no  ;;
-       *) AC_MSG_ERROR([bad value ${enableval} for --enable-python]) ;;
-     esac],[python_bind=yes])
-
-AC_ARG_ENABLE([perl],
-     [AC_HELP_STRING([--enable-perl], [enable compilation of perl bindings (default=no)])],
-     [case "${enableval}" in
-       yes) perl_bind=yes ;;
-       no)  perl_bind=no  ;;
-       *) AC_MSG_ERROR([bad value ${enableval} for --enable-perl]) ;;
-     esac],[perl_bind=no])
-
-AC_ARG_ENABLE([regex-posix],
-     [AC_HELP_STRING([--enable-regex-posix], [compile with POSIX instead of PCRE regex (default=no)])],
-     [case "${enableval}" in
-       yes) regex_posix=yes ;;
-       no)  regex_posix=no  ;;
-       *) AC_MSG_ERROR([bad value ${enableval} for --enable-regex-posix]) ;;
-     esac],[regex_posix=no])
-
-AC_ARG_ENABLE([debug],
-     [AC_HELP_STRING([--enable-debug], [enable debugging flags (default=no)])],
-     [case "${enableval}" in
-       yes) debug=yes ;;
-       no)  debug=no ;;
-       *) AC_MSG_ERROR([bad value ${enableval} for --enable-debug]) ;;
-     esac], [debug=no])
-
-AC_ARG_ENABLE([valgrind],
-     [AC_HELP_STRING([--enable-valgrind], [enable valgrind checks (default=no)])],
-     [case "${enableval}" in
-       yes) vgdebug=yes ;;
-       no)  vgdebug=no ;;
-       *) AC_MSG_ERROR([bad value ${enableval} for --enable-valgrind]) ;;
-     esac], [vgdebug=no])
-
-
-AC_ARG_ENABLE([ssp],
-     [AC_HELP_STRING([--enable-ssp], [enable SSP (fstack-protector, default=no)])],
-     [case "${enableval}" in
-       yes) ssp=yes ;;
-       no)  ssp=no ;;
-       *) AC_MSG_ERROR([bad value ${enableval} for --enable-ssp]) ;;
-     esac], [ssp=no])
+fi # probes = yes
 
 AC_ARG_WITH([crypto],
      [AS_HELP_STRING([--with-crypto],
@@ -990,13 +1001,16 @@ AC_ARG_WITH([crypto],
      [],
      [crypto=gcrypt])
 
-if test "x${libexecdir}" = xNONE; then
-	probe_dir="/usr/local/libexec/openscap"
-else
-	EXPAND_DIR(probe_dir,"${libexecdir}/openscap")
-fi
+if test "$probes" = "yes"; then
+   AC_DEFINE([OVAL_PROBES_ENABLED], [1], [Compile the probe subsystem])
 
-AC_SUBST(probe_dir)
+   if test "x${libexecdir}" = xNONE; then
+      probe_dir="/usr/local/libexec/openscap"
+   else
+      EXPAND_DIR(probe_dir,"${libexecdir}/openscap")
+   fi
+   AC_SUBST(probe_dir)
+fi
 
 if test "x${prefix}" = xNONE; then
 	AC_DEFINE_UNQUOTED([OSCAP_DEFAULT_SCHEMA_PATH], ["/usr/local/share/openscap/schemas"], [Path to xml schemas])
@@ -1171,7 +1185,7 @@ AM_CONDITIONAL([probe_dpkginfo_enabled], test "$probe_dpkginfo_req_deps_ok" = ye
 probe_dpkginfo_enabled=$probe_dpkginfo_req_deps_ok
 
 AM_CONDITIONAL([WANT_CCE],  test "$cce"  = yes)
-
+AM_CONDITIONAL([WANT_PROBES], test "$probes" = yes)
 AM_CONDITIONAL([WANT_PROBES_INDEPENDENT], test "$probes_independent" = yes)
 AM_CONDITIONAL([WANT_PROBES_UNIX], test "$probes_unix" = yes)
 AM_CONDITIONAL([WANT_PROBES_LINUX], test "$probes_linux" = yes)
@@ -1307,6 +1321,8 @@ echo "debugging flags enabled:       $debug"
 echo "CCE enabled:                   $cce"
 echo "SELinux policy enabled:        $selinux_policy"
 echo
+
+if test "$probes" = "yes"; then
 echo '  === probes ==='
 if test "$probe_system_info_req_deps_ok" = "yes"; then
   probe_system_info_table_result="yes"
@@ -1558,7 +1574,7 @@ echo
 echo "  === configuration ==="
 echo "  probe directory set to:      $probe_dir"
 echo ""
-
+fi # probes = "yes"
 echo "  === crypto === "
 echo "  library:                     $crapi_libname"
 echo "     libs:                     $crapi_LIBS"

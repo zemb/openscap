@@ -198,84 +198,6 @@ esac
 AC_SUBST(crapi_CFLAGS)
 AC_SUBST(crapi_LIBS)
 
-AC_CHECK_FUNCS([fts_open posix_memalign memalign])
-AC_CHECK_FUNC(sigwaitinfo, [sigwaitinfo_LIBS=""], [sigwaitinfo_LIBS="-lrt"])
-AC_SUBST(sigwaitinfo_LIBS)
-
-@@@@PROBE_HEADERS@@@@
-
-@@@@PROBE_LIBRARIES@@@@
-echo
-
-
-#check for atomic functions
-case $host_cpu in
-	i386 | i486 | i586 | i686)
-		CFLAGS="$CFLAGS  -march=i686"
-		;;
-esac
-
-AC_CACHE_CHECK([for atomic builtins], [ac_cv_atomic_builtins],
-[AC_LINK_IFELSE([AC_LANG_PROGRAM([#include <stdint.h>
-				  uint16_t foovar=0; uint16_t old=1; uint16_t new=2;],
-				[__sync_bool_compare_and_swap(&foovar,old,new); return __sync_fetch_and_add(&foovar, 1);])],
-		[ac_cv_atomic_builtins=yes],
-		[ac_cv_atomic_builtins=no])])
-if test $ac_cv_atomic_builtins = yes; then
-  AC_DEFINE([HAVE_ATOMIC_BUILTINS], 1, [Define to 1 if the compiler supports atomic builtins.])
-else
-  AC_MSG_NOTICE([!!! Compiler does not support atomic builtins. Atomic operation will be emulated using mutex-based locking. !!!])
-fi
-
-
-AC_ARG_ENABLE([probes-independent],
-     [AC_HELP_STRING([--enable-probes-independent], [enable compilation of probes independent of the base system (default=yes)])],
-     [case "${enableval}" in
-       yes) probes_independent=yes ;;
-       no)  probes_independent=no  ;;
-       *) AC_MSG_ERROR([bad value ${enableval} for --enable-probes-independent]) ;;
-     esac],[probes_independent=yes])
-
-AC_ARG_ENABLE([probes-unix],
-     [AC_HELP_STRING([--enable-probes-unix], [enable compilation of probes for UNIX based systems (default=yes)])],
-     [case "${enableval}" in
-       yes) probes_unix=yes ;;
-       no)  probes_unix=no  ;;
-       *) AC_MSG_ERROR([bad value ${enableval} for --enable-probes-unix]) ;;
-     esac],[probes_unix=yes])
-if test "x${probes_unix}" = xyes; then
-	AC_DEFINE([PLATFORM_UNIX], [1], [Indicator for a Unix type OS])
-fi
-
-
-probes_linux=no
-case "${host}" in
-    *-*-linux*)
-        probes_linux=yes
-    ;;
-esac
-AC_ARG_ENABLE([probes-linux],
-     [AC_HELP_STRING([--enable-probes-linux], [enable compilation of probes for Linux based systems (default=autodetect)])],
-     [case "${enableval}" in
-       yes) probes_linux=yes ;;
-       no)  probes_linux=no  ;;
-       *) AC_MSG_ERROR([bad value ${enableval} for --enable-probes-linux]) ;;
-     esac],)
-
-probes_solaris=no
-case "${host}" in
-    *-*-solaris*)
-        probes_solaris=yes
-    ;;
-esac
-AC_ARG_ENABLE([probes-solaris],
-     [AC_HELP_STRING([--enable-probes-solaris], [enable compilation of probes for Solaris based systems (default=autodetect)])],
-     [case "${enableval}" in
-       yes) probes_solaris=yes ;;
-       no)  probes_solaris=no  ;;
-       *) AC_MSG_ERROR([bad value ${enableval} for --enable-probes-solaris]) ;;
-     esac],)
-
 AC_ARG_ENABLE([cce],
      [AC_HELP_STRING([--enable-cce], [include support for CCE (default=no)])],
      [case "${enableval}" in
@@ -333,19 +255,111 @@ AC_ARG_ENABLE([ssp],
        *) AC_MSG_ERROR([bad value ${enableval} for --enable-ssp]) ;;
      esac], [ssp=no])
 
+AC_ARG_ENABLE([probes],
+     [AC_HELP_STRING([--enable-probes], [enable compilation of probes (default=yes)])],
+     [case "${enableval}" in
+       yes) probes=yes ;;
+       no)  probes=no  ;;
+       *) AC_MSG_ERROR([bad value ${enableval} for --enable-probes]) ;;
+     esac],[probes=yes])
+
+if test "$probes" = "yes"; then
+
+AC_CHECK_FUNCS([fts_open posix_memalign memalign])
+AC_CHECK_FUNC(sigwaitinfo, [sigwaitinfo_LIBS=""], [sigwaitinfo_LIBS="-lrt"])
+AC_SUBST(sigwaitinfo_LIBS)
+
+@@@@PROBE_HEADERS@@@@
+
+@@@@PROBE_LIBRARIES@@@@
+echo
+
+
+#check for atomic functions
+case $host_cpu in
+	i386 | i486 | i586 | i686)
+		CFLAGS="$CFLAGS  -march=i686"
+		;;
+esac
+
+AC_CACHE_CHECK([for atomic builtins], [ac_cv_atomic_builtins],
+[AC_LINK_IFELSE([AC_LANG_PROGRAM([#include <stdint.h>
+				  uint16_t foovar=0; uint16_t old=1; uint16_t new=2;],
+				[__sync_bool_compare_and_swap(&foovar,old,new); return __sync_fetch_and_add(&foovar, 1);])],
+		[ac_cv_atomic_builtins=yes],
+		[ac_cv_atomic_builtins=no])])
+if test $ac_cv_atomic_builtins = yes; then
+  AC_DEFINE([HAVE_ATOMIC_BUILTINS], 1, [Define to 1 if the compiler supports atomic builtins.])
+else
+  AC_MSG_NOTICE([!!! Compiler does not support atomic builtins. Atomic operation will be emulated using mutex-based locking. !!!])
+fi
+
+AC_ARG_ENABLE([probes-independent],
+     [AC_HELP_STRING([--enable-probes-independent], [enable compilation of probes independent of the base system (default=yes)])],
+     [case "${enableval}" in
+       yes) probes_independent=yes ;;
+       no)  probes_independent=no  ;;
+       *) AC_MSG_ERROR([bad value ${enableval} for --enable-probes-independent]) ;;
+     esac],[probes_independent=yes])
+
+AC_ARG_ENABLE([probes-unix],
+     [AC_HELP_STRING([--enable-probes-unix], [enable compilation of probes for UNIX based systems (default=yes)])],
+     [case "${enableval}" in
+       yes) probes_unix=yes ;;
+       no)  probes_unix=no  ;;
+       *) AC_MSG_ERROR([bad value ${enableval} for --enable-probes-unix]) ;;
+     esac],[probes_unix=yes])
+if test "x${probes_unix}" = xyes; then
+	AC_DEFINE([PLATFORM_UNIX], [1], [Indicator for a Unix type OS])
+fi
+
+
+probes_linux=no
+case "${host}" in
+    *-*-linux*)
+        probes_linux=yes
+    ;;
+esac
+AC_ARG_ENABLE([probes-linux],
+     [AC_HELP_STRING([--enable-probes-linux], [enable compilation of probes for Linux based systems (default=autodetect)])],
+     [case "${enableval}" in
+       yes) probes_linux=yes ;;
+       no)  probes_linux=no  ;;
+       *) AC_MSG_ERROR([bad value ${enableval} for --enable-probes-linux]) ;;
+     esac],)
+
+probes_solaris=no
+case "${host}" in
+    *-*-solaris*)
+        probes_solaris=yes
+    ;;
+esac
+AC_ARG_ENABLE([probes-solaris],
+     [AC_HELP_STRING([--enable-probes-solaris], [enable compilation of probes for Solaris based systems (default=autodetect)])],
+     [case "${enableval}" in
+       yes) probes_solaris=yes ;;
+       no)  probes_solaris=no  ;;
+       *) AC_MSG_ERROR([bad value ${enableval} for --enable-probes-solaris]) ;;
+     esac],)
+
+fi # probes = yes
+
 AC_ARG_WITH([crypto],
      [AS_HELP_STRING([--with-crypto],
      [use different crypto backend. Available options: nss3, gcrypt [default=gcrypt]])],
      [],
      [crypto=gcrypt])
 
-if test "x${libexecdir}" = xNONE; then
-	probe_dir="/usr/local/libexec/openscap"
-else
-	EXPAND_DIR(probe_dir,"${libexecdir}/openscap")
-fi
+if test "$probes" = "yes"; then
+   AC_DEFINE([OVAL_PROBES_ENABLED], [1], [Compile the probe subsystem])
 
-AC_SUBST(probe_dir)
+   if test "x${libexecdir}" = xNONE; then
+      probe_dir="/usr/local/libexec/openscap"
+   else
+      EXPAND_DIR(probe_dir,"${libexecdir}/openscap")
+   fi
+   AC_SUBST(probe_dir)
+fi
 
 if test "x${prefix}" = xNONE; then
 	AC_DEFINE_UNQUOTED([OSCAP_DEFAULT_SCHEMA_PATH], ["/usr/local/share/openscap/schemas"], [Path to xml schemas])
@@ -438,7 +452,7 @@ AC_ARG_ENABLE([selinux_policy],
 @@@@PROBE_EVAL@@@@
 
 AM_CONDITIONAL([WANT_CCE],  test "$cce"  = yes)
-
+AM_CONDITIONAL([WANT_PROBES], test "$probes" = yes)
 AM_CONDITIONAL([WANT_PROBES_INDEPENDENT], test "$probes_independent" = yes)
 AM_CONDITIONAL([WANT_PROBES_UNIX], test "$probes_unix" = yes)
 AM_CONDITIONAL([WANT_PROBES_LINUX], test "$probes_linux" = yes)
@@ -574,12 +588,14 @@ echo "debugging flags enabled:       $debug"
 echo "CCE enabled:                   $cce"
 echo "SELinux policy enabled:        $selinux_policy"
 echo
+
+if test "$probes" = "yes"; then
 @@@@PROBE_TABLE@@@@
 echo
 echo "  === configuration ==="
 echo "  probe directory set to:      $probe_dir"
 echo ""
-
+fi # probes = "yes"
 echo "  === crypto === "
 echo "  library:                     $crapi_libname"
 echo "     libs:                     $crapi_LIBS"

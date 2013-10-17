@@ -134,10 +134,12 @@ int oval_value_cast(struct oval_value *value, oval_datatype_t new_dt);
 
 oval_syschar_collection_flag_t oval_component_compute(struct oval_syschar_model *sysmod, struct oval_component *component,
 						      struct oval_collection *value_collection);
+#if defined(OVAL_PROBES_ENABLED)
 oval_syschar_collection_flag_t oval_component_query(oval_probe_session_t *sess, struct oval_component *component,
 						    struct oval_collection *value_collection);
 
 int oval_probe_session_query_object(oval_probe_session_t *sess, struct oval_object *object);
+#endif /* OVAL_PROBES_ENABLED */
 
 typedef void (*oval_component_consumer) (struct oval_component *, void *);
 int oval_component_parse_tag(xmlTextReaderPtr, struct oval_parser_context *, oval_component_consumer, void *);

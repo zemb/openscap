@@ -2,7 +2,11 @@
 LC_ALL = C
 export LC_ALL
 
+if WANT_PROBES
 PROBE_SUBDIRS = probes mitre
+else
+PROBE_SUBDIRS =
+endif
 
 if WANT_SCE
 SCE_SUBDIRS = sce
