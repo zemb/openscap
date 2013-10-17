@@ -263,6 +263,9 @@ AC_ARG_ENABLE([probes],
        *) AC_MSG_ERROR([bad value ${enableval} for --enable-probes]) ;;
      esac],[probes=yes])
 
+AC_CHECK_HEADERS([syslog.h ftw.h])
+AC_CHECK_FUNCS([posix_memalign memalign])
+
 if test "$probes" = "yes"; then
 
 AC_CHECK_FUNCS([fts_open posix_memalign memalign])
