@@ -40,6 +40,7 @@ AC_DEFUN([gl_EARLY],
   AC_REQUIRE([gl_PROG_AR_RANLIB])
   AC_REQUIRE([AM_PROG_CC_C_O])
   # Code from module alloca-opt:
+  # Code from module arpa_inet:
   # Code from module chdir:
   # Code from module close:
   # Code from module closedir:
@@ -65,6 +66,7 @@ AC_DEFUN([gl_EARLY],
   # Code from module getdelim:
   # Code from module getdtablesize:
   # Code from module getline:
+  # Code from module gettimeofday:
   # Code from module havelib:
   # Code from module include_next:
   # Code from module largefile:
@@ -73,6 +75,8 @@ AC_DEFUN([gl_EARLY],
   # Code from module lstat:
   # Code from module malloc-posix:
   # Code from module memchr:
+  # Code from module mkdtemp:
+  # Code from module mkstemp:
   # Code from module msvc-inval:
   # Code from module msvc-nothrow:
   # Code from module multiarch:
@@ -85,6 +89,7 @@ AC_DEFUN([gl_EARLY],
   # Code from module random_r:
   # Code from module readdir:
   # Code from module realloc-posix:
+  # Code from module secure_getenv:
   # Code from module signal-h:
   # Code from module sigprocmask:
   # Code from module size_max:
@@ -92,25 +97,36 @@ AC_DEFUN([gl_EARLY],
   # Code from module snippet/arg-nonnull:
   # Code from module snippet/c++defs:
   # Code from module snippet/warn-on-use:
+  # Code from module socklen:
   # Code from module ssize_t:
   # Code from module stat:
+  # Code from module stdalign:
   # Code from module stdbool:
   # Code from module stddef:
   # Code from module stdint:
   # Code from module stdio:
   # Code from module stdlib:
   # Code from module stpcpy:
+  # Code from module strcase:
   # Code from module strdup-posix:
   # Code from module strerror-override:
   # Code from module strerror_r-posix:
   # Code from module string:
+  # Code from module strings:
+  # Code from module strptime:
   # Code from module strsep:
+  # Code from module sys_socket:
   # Code from module sys_stat:
+  # Code from module sys_time:
   # Code from module sys_types:
   # Code from module sys_uio:
+  # Code from module sys_utsname:
+  # Code from module sys_wait:
+  # Code from module tempname:
   # Code from module threadlib:
   gl_THREADLIB_EARLY
   # Code from module time:
+  # Code from module time_r:
   # Code from module unistd:
   # Code from module vasnprintf:
   # Code from module vasprintf:
@@ -134,6 +150,8 @@ AC_DEFUN([gl_INIT],
   gl_COMMON
   gl_source_base='lib'
   gl_FUNC_ALLOCA
+  gl_HEADER_ARPA_INET
+  AC_PROG_MKDIR_P
   gl_UNISTD_MODULE_INDICATOR([chdir])
   gl_FUNC_CLOSE
   if test $REPLACE_CLOSE = 1; then
@@ -207,6 +225,12 @@ AC_DEFUN([gl_INIT],
     gl_PREREQ_GETLINE
   fi
   gl_STDIO_MODULE_INDICATOR([getline])
+  gl_FUNC_GETTIMEOFDAY
+  if test $HAVE_GETTIMEOFDAY = 0 || test $REPLACE_GETTIMEOFDAY = 1; then
+    AC_LIBOBJ([gettimeofday])
+    gl_PREREQ_GETTIMEOFDAY
+  fi
+  gl_SYS_TIME_MODULE_INDICATOR([gettimeofday])
   AC_REQUIRE([gl_LARGEFILE])
   gl_LOCK
   gl_MODULE_INDICATOR([lock])
@@ -227,6 +251,18 @@ AC_DEFUN([gl_INIT],
     gl_PREREQ_MEMCHR
   fi
   gl_STRING_MODULE_INDICATOR([memchr])
+  gl_FUNC_MKDTEMP
+  if test $HAVE_MKDTEMP = 0; then
+    AC_LIBOBJ([mkdtemp])
+    gl_PREREQ_MKDTEMP
+  fi
+  gl_STDLIB_MODULE_INDICATOR([mkdtemp])
+  gl_FUNC_MKSTEMP
+  if test $HAVE_MKSTEMP = 0 || test $REPLACE_MKSTEMP = 1; then
+    AC_LIBOBJ([mkstemp])
+    gl_PREREQ_MKSTEMP
+  fi
+  gl_STDLIB_MODULE_INDICATOR([mkstemp])
   gl_MSVC_INVAL
   if test $HAVE_MSVC_INVALID_PARAMETER_HANDLER = 1; then
     AC_LIBOBJ([msvc-inval])
@@ -282,6 +318,12 @@ AC_DEFUN([gl_INIT],
     AC_LIBOBJ([realloc])
   fi
   gl_STDLIB_MODULE_INDICATOR([realloc-posix])
+  gl_FUNC_SECURE_GETENV
+  if test $HAVE_SECURE_GETENV = 0; then
+    AC_LIBOBJ([secure_getenv])
+    gl_PREREQ_SECURE_GETENV
+  fi
+  gl_STDLIB_MODULE_INDICATOR([secure_getenv])
   gl_SIGNAL_H
   gl_SIGNALBLOCKING
   if test $HAVE_POSIX_SIGNALBLOCKING = 0; then
@@ -290,6 +332,7 @@ AC_DEFUN([gl_INIT],
   fi
   gl_SIGNAL_MODULE_INDICATOR([sigprocmask])
   gl_SIZE_MAX
+  gl_TYPE_SOCKLEN_T
   gt_TYPE_SSIZE_T
   gl_FUNC_STAT
   if test $REPLACE_STAT = 1; then
@@ -297,6 +340,7 @@ AC_DEFUN([gl_INIT],
     gl_PREREQ_STAT
   fi
   gl_SYS_STAT_MODULE_INDICATOR([stat])
+  gl_STDALIGN_H
   AM_STDBOOL_H
   gl_STDDEF_H
   gl_STDINT_H
@@ -308,6 +352,15 @@ AC_DEFUN([gl_INIT],
     gl_PREREQ_STPCPY
   fi
   gl_STRING_MODULE_INDICATOR([stpcpy])
+  gl_STRCASE
+  if test $HAVE_STRCASECMP = 0; then
+    AC_LIBOBJ([strcasecmp])
+    gl_PREREQ_STRCASECMP
+  fi
+  if test $HAVE_STRNCASECMP = 0; then
+    AC_LIBOBJ([strncasecmp])
+    gl_PREREQ_STRNCASECMP
+  fi
   gl_FUNC_STRDUP_POSIX
   if test $ac_cv_func_strdup = no || test $REPLACE_STRDUP = 1; then
     AC_LIBOBJ([strdup])
@@ -327,20 +380,42 @@ AC_DEFUN([gl_INIT],
   fi
   gl_STRING_MODULE_INDICATOR([strerror_r])
   gl_HEADER_STRING_H
+  gl_HEADER_STRINGS_H
+  gl_FUNC_STRPTIME
+  if test $HAVE_STRPTIME = 0; then
+    AC_LIBOBJ([strptime])
+    gl_PREREQ_STRPTIME
+  fi
+  gl_TIME_MODULE_INDICATOR([strptime])
   gl_FUNC_STRSEP
   if test $HAVE_STRSEP = 0; then
     AC_LIBOBJ([strsep])
     gl_PREREQ_STRSEP
   fi
   gl_STRING_MODULE_INDICATOR([strsep])
+  gl_HEADER_SYS_SOCKET
+  AC_PROG_MKDIR_P
   gl_HEADER_SYS_STAT_H
+  AC_PROG_MKDIR_P
+  gl_HEADER_SYS_TIME_H
   AC_PROG_MKDIR_P
   gl_SYS_TYPES_H
   AC_PROG_MKDIR_P
   gl_HEADER_SYS_UIO
   AC_PROG_MKDIR_P
+  gl_SYS_UTSNAME_H
+  AC_PROG_MKDIR_P
+  gl_SYS_WAIT_H
+  AC_PROG_MKDIR_P
+  gl_FUNC_GEN_TEMPNAME
   gl_THREADLIB
   gl_HEADER_TIME_H
+  gl_TIME_R
+  if test $HAVE_LOCALTIME_R = 0 || test $REPLACE_LOCALTIME_R = 1; then
+    AC_LIBOBJ([time_r])
+    gl_PREREQ_TIME_R
+  fi
+  gl_TIME_MODULE_INDICATOR([time_r])
   gl_UNISTD_H
   gl_FUNC_VASNPRINTF
   gl_FUNC_VASPRINTF
@@ -492,6 +567,7 @@ AC_DEFUN([gl_FILE_LIST], [
   build-aux/snippet/c++defs.h
   build-aux/snippet/warn-on-use.h
   lib/alloca.in.h
+  lib/arpa_inet.in.h
   lib/asnprintf.c
   lib/asprintf.c
   lib/basename-lgpl.c
@@ -521,6 +597,7 @@ AC_DEFUN([gl_FILE_LIST], [
   lib/getdelim.c
   lib/getdtablesize.c
   lib/getline.c
+  lib/gettimeofday.c
   lib/glthread/lock.c
   lib/glthread/lock.h
   lib/glthread/threadlib.c
@@ -529,6 +606,8 @@ AC_DEFUN([gl_FILE_LIST], [
   lib/malloc.c
   lib/memchr.c
   lib/memchr.valgrind
+  lib/mkdtemp.c
+  lib/mkstemp.c
   lib/msvc-inval.c
   lib/msvc-inval.h
   lib/msvc-nothrow.c
@@ -546,27 +625,41 @@ AC_DEFUN([gl_FILE_LIST], [
   lib/random_r.c
   lib/readdir.c
   lib/realloc.c
+  lib/secure_getenv.c
   lib/signal.in.h
   lib/sigprocmask.c
   lib/size_max.h
   lib/stat.c
+  lib/stdalign.in.h
   lib/stdbool.in.h
   lib/stddef.in.h
   lib/stdint.in.h
   lib/stdio.in.h
   lib/stdlib.in.h
   lib/stpcpy.c
+  lib/strcasecmp.c
   lib/strdup.c
   lib/strerror-override.c
   lib/strerror-override.h
   lib/strerror_r.c
   lib/string.in.h
+  lib/strings.in.h
   lib/stripslash.c
+  lib/strncasecmp.c
+  lib/strptime.c
   lib/strsep.c
+  lib/sys_socket.c
+  lib/sys_socket.in.h
   lib/sys_stat.in.h
+  lib/sys_time.in.h
   lib/sys_types.in.h
   lib/sys_uio.in.h
+  lib/sys_utsname.in.h
+  lib/sys_wait.in.h
+  lib/tempname.c
+  lib/tempname.h
   lib/time.in.h
+  lib/time_r.c
   lib/unistd.c
   lib/unistd.in.h
   lib/vasnprintf.c
@@ -578,6 +671,7 @@ AC_DEFUN([gl_FILE_LIST], [
   lib/xsize.h
   m4/00gnulib.m4
   m4/alloca.m4
+  m4/arpa_inet_h.m4
   m4/close.m4
   m4/closedir.m4
   m4/dirent_h.m4
@@ -600,6 +694,7 @@ AC_DEFUN([gl_FILE_LIST], [
   m4/getdelim.m4
   m4/getdtablesize.m4
   m4/getline.m4
+  m4/gettimeofday.m4
   m4/gnulib-common.m4
   m4/include_next.m4
   m4/intmax_t.m4
@@ -614,6 +709,8 @@ AC_DEFUN([gl_FILE_LIST], [
   m4/malloc.m4
   m4/math_h.m4
   m4/memchr.m4
+  m4/mkdtemp.m4
+  m4/mkstemp.m4
   m4/mmap-anon.m4
   m4/mode_t.m4
   m4/msvc-inval.m4
@@ -631,11 +728,15 @@ AC_DEFUN([gl_FILE_LIST], [
   m4/random_r.m4
   m4/readdir.m4
   m4/realloc.m4
+  m4/secure_getenv.m4
   m4/signal_h.m4
   m4/signalblocking.m4
   m4/size_max.m4
+  m4/socklen.m4
+  m4/sockpfaf.m4
   m4/ssize_t.m4
   m4/stat.m4
+  m4/stdalign.m4
   m4/stdbool.m4
   m4/stddef_h.m4
   m4/stdint.m4
@@ -643,17 +744,26 @@ AC_DEFUN([gl_FILE_LIST], [
   m4/stdio_h.m4
   m4/stdlib_h.m4
   m4/stpcpy.m4
+  m4/strcase.m4
   m4/strdup.m4
   m4/strerror.m4
   m4/strerror_r.m4
   m4/string_h.m4
+  m4/strings_h.m4
+  m4/strptime.m4
   m4/strsep.m4
   m4/sys_socket_h.m4
   m4/sys_stat_h.m4
+  m4/sys_time_h.m4
   m4/sys_types_h.m4
   m4/sys_uio_h.m4
+  m4/sys_utsname_h.m4
+  m4/sys_wait_h.m4
+  m4/tempname.m4
   m4/threadlib.m4
   m4/time_h.m4
+  m4/time_r.m4
+  m4/tm_gmtoff.m4
   m4/unistd_h.m4
   m4/vasnprintf.m4
   m4/vasprintf.m4
