@@ -42,6 +42,7 @@ AC_DEFUN([gl_EARLY],
   # Code from module alloca-opt:
   # Code from module arpa_inet:
   # Code from module c-ctype:
+  # Code from module canonicalize-lgpl:
   # Code from module chdir:
   # Code from module close:
   # Code from module closedir:
@@ -78,6 +79,7 @@ AC_DEFUN([gl_EARLY],
   # Code from module lock:
   # Code from module lstat:
   # Code from module malloc-posix:
+  # Code from module malloca:
   # Code from module memchr:
   # Code from module mkdtemp:
   # Code from module mkstemp:
@@ -87,6 +89,7 @@ AC_DEFUN([gl_EARLY],
   # Code from module net_if:
   # Code from module netdb:
   # Code from module netinet_in:
+  # Code from module nocrash:
   # Code from module open:
   # Code from module opendir:
   # Code from module pathmax:
@@ -95,6 +98,7 @@ AC_DEFUN([gl_EARLY],
   # Code from module random:
   # Code from module random_r:
   # Code from module readdir:
+  # Code from module readlink:
   # Code from module realloc-posix:
   # Code from module secure_getenv:
   # Code from module signal-h:
@@ -162,6 +166,13 @@ AC_DEFUN([gl_INIT],
   gl_FUNC_ALLOCA
   gl_HEADER_ARPA_INET
   AC_PROG_MKDIR_P
+  gl_CANONICALIZE_LGPL
+  if test $HAVE_CANONICALIZE_FILE_NAME = 0 || test $REPLACE_CANONICALIZE_FILE_NAME = 1; then
+    AC_LIBOBJ([canonicalize-lgpl])
+  fi
+  gl_MODULE_INDICATOR([canonicalize-lgpl])
+  gl_STDLIB_MODULE_INDICATOR([canonicalize_file_name])
+  gl_STDLIB_MODULE_INDICATOR([realpath])
   gl_UNISTD_MODULE_INDICATOR([chdir])
   gl_FUNC_CLOSE
   if test $REPLACE_CLOSE = 1; then
@@ -272,6 +283,7 @@ AC_DEFUN([gl_INIT],
     AC_LIBOBJ([malloc])
   fi
   gl_STDLIB_MODULE_INDICATOR([malloc-posix])
+  gl_MALLOCA
   gl_FUNC_MEMCHR
   if test $HAVE_MEMCHR = 0 || test $REPLACE_MEMCHR = 1; then
     AC_LIBOBJ([memchr])
@@ -345,6 +357,12 @@ AC_DEFUN([gl_INIT],
     AC_LIBOBJ([readdir])
   fi
   gl_DIRENT_MODULE_INDICATOR([readdir])
+  gl_FUNC_READLINK
+  if test $HAVE_READLINK = 0 || test $REPLACE_READLINK = 1; then
+    AC_LIBOBJ([readlink])
+    gl_PREREQ_READLINK
+  fi
+  gl_UNISTD_MODULE_INDICATOR([readlink])
   gl_FUNC_REALLOC_POSIX
   if test $REPLACE_REALLOC = 1; then
     AC_LIBOBJ([realloc])
@@ -613,6 +631,7 @@ AC_DEFUN([gl_FILE_LIST], [
   lib/basename-lgpl.c
   lib/c-ctype.c
   lib/c-ctype.h
+  lib/canonicalize-lgpl.c
   lib/close.c
   lib/closedir.c
   lib/dirent-private.h
@@ -649,6 +668,9 @@ AC_DEFUN([gl_FILE_LIST], [
   lib/itold.c
   lib/lstat.c
   lib/malloc.c
+  lib/malloca.c
+  lib/malloca.h
+  lib/malloca.valgrind
   lib/memchr.c
   lib/memchr.valgrind
   lib/mkdtemp.c
@@ -672,6 +694,7 @@ AC_DEFUN([gl_FILE_LIST], [
   lib/random.c
   lib/random_r.c
   lib/readdir.c
+  lib/readlink.c
   lib/realloc.c
   lib/secure_getenv.c
   lib/signal.in.h
@@ -724,6 +747,7 @@ AC_DEFUN([gl_FILE_LIST], [
   m4/00gnulib.m4
   m4/alloca.m4
   m4/arpa_inet_h.m4
+  m4/canonicalize.m4
   m4/close.m4
   m4/closedir.m4
   m4/dirent_h.m4
@@ -731,6 +755,7 @@ AC_DEFUN([gl_FILE_LIST], [
   m4/dirname.m4
   m4/double-slash-root.m4
   m4/dup2.m4
+  m4/eealloc.m4
   m4/errno_h.m4
   m4/exponentd.m4
   m4/extensions.m4
@@ -762,6 +787,7 @@ AC_DEFUN([gl_FILE_LIST], [
   m4/longlong.m4
   m4/lstat.m4
   m4/malloc.m4
+  m4/malloca.m4
   m4/math_h.m4
   m4/memchr.m4
   m4/mkdtemp.m4
@@ -774,6 +800,7 @@ AC_DEFUN([gl_FILE_LIST], [
   m4/net_if_h.m4
   m4/netdb_h.m4
   m4/netinet_in_h.m4
+  m4/nocrash.m4
   m4/off_t.m4
   m4/onceonly.m4
   m4/open.m4
@@ -785,6 +812,7 @@ AC_DEFUN([gl_FILE_LIST], [
   m4/random.m4
   m4/random_r.m4
   m4/readdir.m4
+  m4/readlink.m4
   m4/realloc.m4
   m4/secure_getenv.m4
   m4/signal_h.m4
